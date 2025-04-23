@@ -3,10 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Master's Manuscript</title>
+    <title>Maintaining Cosmic Balance</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .timeline-container {
+            position: relative;
+            margin: 1rem auto;
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            min-height: 1000px;
+            color: #8b0000;
+            overflow: visible;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+        }
+
+        .background-squares-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background-color: #1a0000;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        .square {
+            position: absolute;
+            background: rgba(139, 0, 0, 0.1);
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+            padding-top: 4rem;
+            padding-bottom: 250px;
+        }
+
+        .title {
+            font-size: 3rem;
+            color: #fff;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
+            margin-top: 2rem;
+        }
+
+        /* Add floating mystical symbols */
+        .mystical-symbols {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.50;
+        }
+
+        .symbol {
+            position: absolute;
+            font-size: 2.5rem;
+            color: #8b0000;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            animation: float 20s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(20px, 20px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* Scale container styles */
+        .scale-container {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            pointer-events: auto;
+        }
+
+        .scale {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .scale-beam {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: center;
+            width: 200px;
+            height: 4px;
+            background: #8b0000;
+            transform: translate(-50%, -50%) rotate(0deg);
+            transition: transform 0.5s ease;
+        }
+
+        .scale-pivot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #8b0000;
+            border-radius: 50%;
+        }
+
+        .scale-left, .scale-right {
+            position: absolute;
+            top: 50%;
+            width: 60px;
+            height: 60px;
+            background: rgba(139, 0, 0, 0.2);
+            border: 2px solid #8b0000;
+            border-radius: 50%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .scale-left {
+            left: 0;
+            transform: translate(-50%, -50%);
+        }
+
+        .scale-right {
+            right: 0;
+            transform: translate(50%, -50%);
+        }
+
+        .ball-container {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .ball {
+            width: 25px;
+            height: 25px;
+            background: #8b0000;
+            border-radius: 50%;
+            cursor: grab;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: transparent;
+            font-size: 0.8rem;
+            user-select: none;
+            margin: 2px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .ball:hover {
+            transform: scale(1.1);
+        }
+
+        .ball.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .ball.placed {
+            position: relative;
+            pointer-events: auto;
+        }
+
+        .scale-left .ball, .scale-right .ball {
+            position: relative;
+            transform: none;
+        }
+
+        .ball-counter {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #8b0000;
+            font-size: 0.9rem;
+        }
+
+        .balance-indicator {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #8b0000;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .balance-indicator.visible {
+            opacity: 1;
+            animation: fadeOut 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .content-sections {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            margin-top: 2rem;
+            gap: 2rem;
+        }
+
+        .content-section {
+            flex: 1;
+            max-width: 30%;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid rgba(139, 0, 0, 0.2);
+            position: relative;
+            overflow: visible;
+        }
+
+        .content-section h2 {
+            color: #8b0000;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .content-section p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 1rem;
+        }
+
+        .content-section ul {
+            color: rgba(255, 255, 255, 0.8);
+            padding-left: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .content-section li {
+            margin-bottom: 0.5rem;
+            font-size: 14px;
+        }
+
+        /* Add contrast toggle button styles */
+        .contrast-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            font-family: var(--font-primary);
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .contrast-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Light mode styles */
+        body.light-mode {
+            background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%);
+        }
+
+        body.light-mode .background-squares-content {
+            background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%);
+        }
+
+        body.light-mode .square {
+            background: rgba(139, 0, 0, 0.05);  /* Very subtle red tint */
+            border: 1px solid rgba(139, 0, 0, 0.1);
+        }
+
+        body.light-mode .title {
+            color: #000;
+            text-shadow: none;
+        }
+
+        body.light-mode .content-section {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .content-section h2 {
+            color: #000;
+        }
+
+        body.light-mode .content-section p,
+        body.light-mode .content-section li {
+            color: #000;
+        }
+
+        body.light-mode .ball {
+            background: #8b0000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .scale-beam,
+        body.light-mode .scale-pivot {
+            background: #8b0000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .symbol {
+            opacity: 0.15;
+            color: #8b0000;
+        }
+
+        body.light-mode .contrast-toggle {
+            color: #000;
+            border-color: rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .ball-counter {
+            color: #000;
+        }
+
+        body.light-mode .balance-indicator {
+            color: #000;
+        }
+
+        .written-analysis {
+            position: relative;
+            max-width: 800px;
+            margin: -5rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 0, 0, 0.2);
+            margin-bottom: 250px;
+        }
+
+        .written-analysis h3 {
+            color: #8b0000;
+            font-size: 20px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .written-analysis p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-size: 15px;
+        }
+
+        .written-analysis b {
+            color: #8b0000;
+            font-weight: 600;
+        }
+
+        /* Light mode styles for written analysis */
+        body.light-mode .written-analysis {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .written-analysis h3 {
+            color: #000;
+        }
+
+        body.light-mode .written-analysis p {
+            color: #000;
+        }
+
+        body.light-mode .written-analysis b {
+            color: #8b0000;
+        }
+    </style>
 </head>
 <body class="content-page">
+    <button class="contrast-toggle">Toggle Contrast</button>
+    
     <div class="home-icon fade-element">
         <a href="index.html">←</a>
     </div>
@@ -21,47 +434,182 @@
     </div>
 
     <div class="main-content">
-        <div class="text-content">
-            <h1 class="title fade-element">The Master's Manuscript</h1>
-            <div class="subtitle-wrapper fade-element">
-                <p class="subtitle">The Master's novel about Pontius Pilate represents the search for historical and artistic truth, becoming a central element in Bulgakov's exploration of the power of art and the responsibility of the artist.</p>
-            </div>
-            
+        <h1 class="title fade-element">Maintaining Cosmic Balance</h1>
+        
+        <div class="content-sections">
             <div class="content-section fade-element">
-                <h2>The Novel Within the Novel</h2>
-                <p>The Master's manuscript tells the story of:</p>
+                <h2>If Evil did not Exist</h2>
+                <p>Through a slightly tense conversation with Matthew Levi, a good and righteous disciple of Yeshua, Woland poses the question to him: What would happen "if evil did not exist"? What would happen "if all the shadows disappeared"? (Bulgakov, 368)</p>
                 <ul>
-                    <li>Pontius Pilate's encounter with Yeshua Ha-Nozri</li>
-                    <li>The moral struggle of judgment and conscience</li>
-                    <li>The weight of historical truth</li>
-                    <li>The consequences of cowardice</li>
+                    <li>Woland asserts that evil is not abnormal, but necessary for balance</li>
+                    <li>He makes it clear he does not operate in opposition to God, but rather as a divine balance</li>
+                    <li>Woland is not simply evil for the sake of being evil, but is a shadow that makes light possible</li>
                 </ul>
             </div>
 
             <div class="content-section fade-element">
-                <h2>The Master's Journey</h2>
-                <p>The Master's personal story involves:</p>
+                <h2>Feelings of Mercy</h2>
+                <p>After being faced with Margarita's pity and courage towards Frieda, Woland ultimately decides to show Frieda mercy, which he emphasizes finds a way to "creep... through the narrowest cracks" (Bulgakob, 294).</p>
                 <ul>
-                    <li>His dedication to historical truth</li>
-                    <li>Persecution by Soviet literary critics</li>
-                    <li>His retreat from society</li>
-                    <li>His redemption through Margarita's love</li>
+                    <li>Even Woland can show divine-like compassion to the souls of the damned</li>
+                    <li>Although uncomfortable with feelings of mercy and empathy, Woland gives in to those deserving of it</li>
+                    <li>Woland unknowingly has been doing God's will in providing salvation to the damned</li>
                 </ul>
             </div>
 
             <div class="content-section fade-element">
-                <h2>Themes and Significance</h2>
-                <p>The manuscript represents:</p>
+                <h2>The Death of Baron Meigel</h2>
+                <p>Due to repeated suspicions of Baron Meigel's character and identity as a spy, Woland could no longer deal with his betrayals and had him killed. He referred to the death of the "inveterate blackguard" as being "worth a reward" (Bulgakov, 293)</p>
                 <ul>
-                    <li>The power of art to reveal truth</li>
-                    <li>The artist's struggle in Soviet society</li>
-                    <li>The relationship between historical and artistic truth</li>
-                    <li>The role of conscience in human decisions</li>
+                    <li>As Meigel is seen as an 'inveterate blackguard', Woland's actions can be seen as a form of divine justice</li>
+                    <li>Woland looked past Meigel's esteemed status, and was able to hold even the powerful and wealthy accountable</li>
+                    <li>Meigel broke the 9th of the 10 Commandments - 'Thou shall not bear false witness against thy neighbor', and thus Woland delivered divinely-aligned justice to this repeat offender</li>
                 </ul>
             </div>
         </div>
     </div>
 
+    <div class="written-analysis fade-element">
+        <h3>Written Analysis</h3>
+        <p>Despite the fact that he is Satan, Woland’s role in the novel is more similar to a divine executioner or even just a balance in nature rather than a force of rebellion - often leading to him unknowingly carrying out God’s will rather than his own.</p>
+        <p>After Matthew Levi approached Woland to speak on behalf of Yeshua, he brushed him off slightly during their initial interaction, to which Woland asked him to consider what his good and righteousness would do “if evil did not exist” and if “all the shadows disappeared” (Bulgakov, 368). Woland essentially asserts that the idea of evil is not abnormal to the world we live in, but more so a balance that needs to be maintained in this cosmic system. He makes it clear that he does not operate in opposition to God, but rather as a divine balance in the greater scheme of things. Woland portrays himself here (and often throughout the book) that he is not evil for the sake of being evil, but is a shadow that makes light possible.</p>
+        <p>Back when Margarita was begging Woland to show mercy on Frieda and end her eternal torment, Woland reluctantly showed them both “mercy”, complaining about how the emotion “creeps… unexpectedly… through the narrowest cracks” (Bulgakov, 294). The idea of Woland showing mercy out of respect for Margarita’s courage and unwavering ideology highlights that Woland is not a figure of pure evil, but is understanding and shows divine-like compassion to the souls of the damned. Woland’s comment about how mercy creeps up on him definitely suggests that he is uncomfortable with the power of human empathy, but gives in to those deserving of it. This further pushes the idea that as Woland is not simply a figure of evil, he can often be seen unknowingly doing God’s will in providing salvation to the damned.</p>
+        <p>After Woland’s grand ball, one of the attendees who was a corrupt individual who Woland became increasingly suspicious of and grew a strong dislike for; Baron Meigel. Woland found out Meigel was a spy who was ordered to eavesdrop on him, and subsequently had him killed for his wrongdoings. Margarita bore witness to the “inveterate blackguard of a baron[‘s]” murder which Woland declared was “worth a reward” (Bulgakov, 293). In this scene, Woland ensured divine punishment would be upon Meigel for his wrongdoings - Woland referring to Meigel as an “inveterate blackguard” shows that his punishment fits his crimes. Meigel was an esteemed employee at the Spectacles Commission, giving him an air of importance. Woland however sees past class and status, and holds even the powerful accountable - even in trying times such as Soviet Russia. Woland’s message here is similar to one that God would give: if your actions betray the trust and truth of another individual, you must face the consequences of said actions. Thus, by punishing Meigel, Woland delivers divinely-aligned justice to this repeat offender.</p>
+            </div>
+
+    <div class="mystical-symbols"></div>
+
+    <div class="scale-container">
+        <div class="scale">
+            <div class="scale-beam"></div>
+            <div class="scale-pivot"></div>
+            <div class="scale-left">
+                <div class="ball-counter">0</div>
+            </div>
+            <div class="scale-right">
+                <div class="ball-counter">0</div>
+            </div>
+            <div class="balance-indicator">balanced!</div>
+        </div>
+        <div class="ball-container">
+            <div class="ball" draggable="true"></div>
+            <div class="ball" draggable="true"></div>
+            <div class="ball" draggable="true"></div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+    <script>
+        // Add floating symbols
+        document.addEventListener('DOMContentLoaded', function() {
+            const symbols = ['✧', '☽', '⚝', '✴', '⚯', '⚮', '✺', '⚜'];
+            const mysticalSymbols = document.querySelector('.mystical-symbols');
+            
+            for(let i = 0; i < 30; i++) {
+                const symbol = document.createElement('div');
+                symbol.className = 'symbol';
+                symbol.style.left = `${Math.random() * 100}%`;
+                symbol.style.top = `${Math.random() * 100}%`;
+                symbol.style.animationDelay = `${Math.random() * 20}s`;
+                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                mysticalSymbols.appendChild(symbol);
+            }
+        });
+
+        // Updated scale functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const balls = document.querySelectorAll('.ball');
+            const scaleLeft = document.querySelector('.scale-left');
+            const scaleRight = document.querySelector('.scale-right');
+            const scaleBeam = document.querySelector('.scale-beam');
+            const balanceIndicator = document.querySelector('.balance-indicator');
+            const leftCounter = scaleLeft.querySelector('.ball-counter');
+            const rightCounter = scaleRight.querySelector('.ball-counter');
+            let leftBalls = 0;
+            let rightBalls = 0;
+
+            balls.forEach(ball => {
+                ball.addEventListener('dragstart', function(e) {
+                    this.classList.add('dragging');
+                });
+
+                ball.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+            });
+
+            scaleLeft.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+
+            scaleRight.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+
+            scaleLeft.addEventListener('drop', function(e) {
+                e.preventDefault();
+                const ball = document.createElement('div');
+                ball.className = 'ball placed';
+                this.insertBefore(ball, this.firstChild);
+                leftBalls++;
+                leftCounter.textContent = leftBalls;
+                updateScale();
+            });
+
+            scaleRight.addEventListener('drop', function(e) {
+                e.preventDefault();
+                const ball = document.createElement('div');
+                ball.className = 'ball placed';
+                this.insertBefore(ball, this.firstChild);
+                rightBalls++;
+                rightCounter.textContent = rightBalls;
+                updateScale();
+            });
+
+            function updateScale() {
+                const difference = rightBalls - leftBalls;
+                const maxTilt = 15;
+                const tilt = Math.min(Math.max(difference * 5, -maxTilt), maxTilt);
+                
+                scaleBeam.style.transform = `translate(-50%, -50%) rotate(${tilt}deg)`;
+                
+                if (leftBalls === rightBalls && leftBalls > 0) {
+                    balanceIndicator.classList.add('visible');
+                    // Remove the visible class after animation completes
+                    setTimeout(() => {
+                        balanceIndicator.classList.remove('visible');
+                    }, 2000);
+                }
+            }
+
+            // Allow removing balls by clicking
+            scaleLeft.addEventListener('click', function(e) {
+                if (e.target.classList.contains('ball')) {
+                    this.removeChild(e.target);
+                    leftBalls--;
+                    leftCounter.textContent = leftBalls;
+                    updateScale();
+                }
+            });
+
+            scaleRight.addEventListener('click', function(e) {
+                if (e.target.classList.contains('ball')) {
+                    this.removeChild(e.target);
+                    rightBalls--;
+                    rightCounter.textContent = rightBalls;
+                    updateScale();
+                }
+            });
+        });
+
+        // Add contrast toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const contrastToggle = document.querySelector('.contrast-toggle');
+            
+            contrastToggle.addEventListener('click', function() {
+                document.body.classList.toggle('light-mode');
+            });
+        });
+    </script>
 </body>
 </html> 
