@@ -1,0 +1,509 @@
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #ffffff;
+    --text: #000000;
+    --accent: #333333;
+    --spacing: 2rem;
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text);
+    font-family: var(--font-primary);
+    overflow-x: hidden;
+    transition: background-color 0.8s ease;
+}
+
+body.title-hover {
+    background-color: #756A6A;
+}
+
+.scroll-container {
+    scroll-snap-type: y mandatory;
+    position: static;
+    z-index: 1;
+}
+
+.section {
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 2rem;
+    position: relative;
+    overflow: visible;
+}
+
+.content {
+    max-width: 800px;
+    width: 100%;
+    padding-right: 15%;
+    position: relative;
+    z-index: 2;
+}
+
+.background-squares {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.square {
+    position: absolute;
+    background-color: #f0f0f0;
+    opacity: 0;
+    transform: translate3d(0, 100px, -100px) rotate3d(1, 1, 0, 20deg);
+    transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.8s ease;
+    will-change: transform;
+    mix-blend-mode: multiply;
+    /* Random sizes between 100px and 200px will be set in JavaScript */
+}
+
+.square.visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate3d(1, 1, 0, 0deg);
+}
+
+/* Add transition for squares when body is in hover state */
+body.title-hover .square {
+    background-color: #602A2A;
+    mix-blend-mode: normal;
+}
+
+.square:hover {
+    transform: translate3d(0, -10px, 50px) rotate3d(1, 1, 0, -5deg);
+    background-color: #333333;
+    mix-blend-mode: normal;
+}
+
+.square:nth-child(1) {
+    width: 150px;
+    height: 150px;
+    top: 20%;
+    left: 15%;
+}
+
+.square:nth-child(2) {
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    left: 25%;
+}
+
+.square:nth-child(3) {
+    width: 200px;
+    height: 200px;
+    top: 30%;
+    left: 40%;
+}
+
+.square:nth-child(4) {
+    width: 120px;
+    height: 120px;
+    top: 60%;
+    left: 10%;
+}
+
+.square:nth-child(5) {
+    width: 180px;
+    height: 180px;
+    top: 15%;
+    left: 30%;
+}
+
+h1, h2 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    margin-bottom: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+h1 a, h2 a {
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+h1 a:hover, h2 a:hover {
+    color: #8B0000;
+    opacity: 1;
+}
+
+.description {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    margin-top: 2rem;
+    opacity: 0.8;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+.subcontent {
+    margin-top: 3rem;
+    opacity: 0.7;
+}
+
+.subcontent p {
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    transform: translateX(20px);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.subcontent.visible p {
+    transform: translateX(0);
+}
+
+.subcontent p:last-child {
+    margin-bottom: 0;
+}
+
+.fade-element {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-element.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.side-nav {
+    position: fixed;
+    right: 2rem;
+    z-index: 100;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.side-nav ul {
+    list-style: none;
+}
+
+.nav-link {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.875rem;
+    opacity: 0.3;
+    transition: all 0.3s ease;
+    display: block;
+    padding: 1rem;
+    position: relative;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    opacity: 0.7;
+}
+
+.nav-link.active {
+    opacity: 1;
+    font-weight: 700;
+}
+
+.nav-indicator {
+    position: fixed;
+    right: -10px;
+    width: 2px;
+    height: 20px;
+    background-color: var(--text);
+    transition: transform 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .side-nav {
+        display: none;
+    }
+    
+    .content {
+        padding: 1rem;
+        padding-right: 2rem;
+    }
+    
+    .square {
+        transform: scale(0.7);
+    }
+}
+
+.noise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.05;
+    z-index: 1;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAElBMVEUAAAD8/vz08vT09PT8/Pz///+Vm4V1AAAABnRSTlMAgICAgICAvHkwxYkJAAAANElEQVQ4y2NgQAX8/PyYGPgZGBgYkAArgwADAwMbAyMDGwMjAxcDE1SIgYGBiYGR4f8/APogBf2F5/amAAAAAElFTkSuQmCC');
+}
+
+.main-content {
+    position: relative;
+    z-index: 2;
+    padding: var(--spacing);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.text-content {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.title {
+    font-size: clamp(2rem, 8vw, 5rem);
+    font-weight: 700;
+    margin-bottom: var(--spacing);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.subtitle-wrapper {
+    margin-top: var(--spacing);
+}
+
+.subtitle {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    opacity: 0.7;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+.typing-text {
+    border-right: 2px solid var(--accent);
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 4s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+/*
+.navigation {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    margin-top: 0;
+    pointer-events: auto;
+}
+
+.navigation ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing);
+} */
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--accent);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--accent) }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --spacing: 1.5rem;
+    }
+    
+    .navigation ul {
+        flex-direction: column;
+    }
+}
+
+.home-icon {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.home-icon a {
+    color: #8b0000;
+    font-size: 24px;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: block;
+}
+
+.home-icon a:hover {
+    color: #cc0000;
+    transform: scale(1.1);
+}
+
+.title-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.hover-hint {
+    position: absolute;
+    top: -1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #f0f0f0;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    text-align: center;
+}
+
+.title-wrapper:hover .hover-hint {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Content page specific styles */
+.content-section {
+    margin: 2rem 0;
+    max-width: 800px;
+    padding: 1.5rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.content-section:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Adjust spacing for content sections in dark mode */
+.content-page .content-section {
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.content-page .content-section:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: translateX(10px);
+}
+
+/* Make sure text remains crisp on hover */
+.content-section:hover h2,
+.content-section:hover p,
+.content-section:hover li {
+    opacity: 1;
+}
+
+.content-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.content-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.content-section ul {
+    list-style-type: none;
+    padding-left: 1rem;
+    margin: 1rem 0;
+}
+
+.content-section li {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+    position: relative;
+    padding-left: 1.5rem;
+    font-weight: 400;
+}
+
+.content-section li:before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #8B0000;
+}
+
+/* Content page background squares */
+.background-squares-content {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Content page hover effects */
+.content-page .title:hover {
+    color: #8B0000;
+    transition: color 0.8s ease;
+}
+
+.content-page .title:hover ~ .background-squares-content .square {
+    background-color: #602A2A;
+    mix-blend-mode: normal;
+}
+
+body.content-page {
+    transition: background-color 0.8s ease;
+}
+
+.content-page .title:hover ~ body {
+    background-color: #756A6A;
+}
+
+/* Enhance home icon */
+.home-icon a {
+    font-size: 2rem;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.home-icon a:hover {
+    transform: translateX(-5px);
+} 

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Woland's Larger Role</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .timeline-container {
+            position: relative;
+            margin: 1rem auto;
+            padding: 4rem 2rem;  /* Added horizontal padding */
+            max-width: 1000px;
+            min-height: 1000px;
+            color: #8b0000;
+            overflow: visible;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: calc(100% - 8rem);  /* Adjusted to account for shorter spacing */
+            background-color: #8b0000;
+            border-radius: 12px;
+            margin: 4rem 0;  /* Reduced from 6rem */
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.3);
+        }
+
+        .timeline-point {
+            position: relative;
+            margin: 10rem 0;  /* Reduced from 15rem */
+            display: flex;
+            align-items: center;
+            min-height: 100px;
+            color: #8b0000;
+        }
+
+        .timeline-point:nth-child(odd) {
+            justify-content: flex-start;
+            padding-right: 50%;
+        }
+
+        .timeline-point:nth-child(even) {
+            justify-content: flex-end;
+            padding-left: 50%;
+        }
+
+        .timeline-point::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            width: 250px;
+            height: 8px;
+            background-color: #8b0000;
+            border-radius: 4px;
+            z-index: 1;
+        }
+
+        .timeline-point:nth-child(odd)::before {
+            transform: translateX(0);
+        }
+
+        .timeline-point:nth-child(even)::before {
+            transform: translateX(-100%);
+        }
+
+        .timeline-page {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: #8b0000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: "Times New Roman", serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            z-index: 3;
+            cursor: pointer;
+        }
+
+        .timeline-quote {
+            position: absolute;
+            width: 400px;
+            padding: 1.5rem;
+            background-color: white;
+            border: 1px solid rgba(139, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #333;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 4;
+        }
+
+        /* Add diamond decorations */
+        .timeline-quote::after {
+            content: '◆';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(139, 0, 0, 0.2);
+            font-size: 1.2rem;
+        }
+
+        .timeline-quote::before {
+            content: '◆';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: rgba(139, 0, 0, 0.2);
+            font-size: 1.2rem;
+        }
+
+        /* First point (295) - right side */
+        .timeline-point:nth-child(1) .timeline-quote {
+            right: calc(50% + 40px);
+            transform: translateY(-50%) translateX(0);
+        }
+
+        /* Second point (369) - left side */
+        .timeline-point:nth-child(2) .timeline-quote {
+            left: calc(50% + 40px);
+            transform: translateY(-40%) translateX(0);
+        }
+
+        /* Third point (390) - right side */
+        .timeline-point:nth-child(3) .timeline-quote {
+            right: calc(50% + 50px);
+            transform: translateY(-40%) translateX(0);
+        }
+
+        .timeline-quote.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Adjust arrow position based on side */
+        .timeline-point:nth-child(1) .timeline-quote::before,
+        .timeline-point:nth-child(3) .timeline-quote::before {
+            left: -7px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .timeline-point:nth-child(2) .timeline-quote::before {
+            right: -7px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+
+        .close-button {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            width: 24px;
+            height: 24px;
+            background-color: #8b0000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+            background-color: #a00000;
+        }
+
+        .timeline-page:hover + .timeline-quote,
+        .timeline-quote:hover {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .timeline-page:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .timeline-content {
+            max-width: 300px;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: whitesmoke;
+            opacity: 0;
+            transition: all 0.6s ease;
+            position: absolute;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-point.visible .timeline-content {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Adjust positioning to account for new padding */
+        .timeline-point:nth-child(odd) .timeline-content {
+            left: calc(50% + 250px);
+            transform: translateX(-20px);
+        }
+
+        .timeline-point:nth-child(even) .timeline-content {
+            right: calc(50% + 250px);
+            text-align: right;
+            transform: translateX(20px);
+        }
+
+        .timeline-page::before {
+            content: '';
+            position: absolute;
+            width: 54px;
+            height: 54px;
+            background-color: #8b0000;
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .background-squares-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Add overlay for clicking outside */
+        .timeline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            display: none;
+            z-index: 3;
+        }
+
+        .timeline-overlay.active {
+            display: block;
+        }
+
+        /* Add margin to the new text snippet */
+        .subtitle-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        .subtitle-wrapper h2.fade-element {
+            margin-top: 1.5rem;
+            margin-bottom: 0;
+            opacity: 0.8;
+        }
+
+        /* Add styles for the written analysis section */
+        .written-analysis {
+            margin-top: 4rem;
+            text-align: left;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 2rem;
+        }
+
+        .written-analysis h3 {
+            color: #8b0000;
+            font-family: var(--font-primary);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .written-analysis p {
+            font-size: 0.8125rem;  /* 13px */
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        /* Add a dark, mystical background */
+        body.content-page {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2b1216 50%, #1a1a1a 100%);
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Add floating mystical symbols */
+        .mystical-symbols {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.50;
+        }
+
+        .symbol {
+            position: absolute;
+            font-size: 2.5rem;
+            color: #8b0000;
+           
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(20px, 20px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* Adjust content colors for dark theme */
+        .title {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
+        }
+
+        .subtitle, .subtitle-wrapper h2 {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Add a subtle glow to timeline elements */
+        .timeline-page {
+            box-shadow: 0 0 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .timeline-line {
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.2);
+        }
+
+        .timeline-quote {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+        }
+
+        .written-analysis {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .written-analysis p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Add contrast toggle button styles */
+        .contrast-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            font-family: var(--font-primary);
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .contrast-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Light mode styles */
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #f5f5f5 100%);
+        }
+
+        body.light-mode .title {
+            color: #333;
+            text-shadow: none;
+        }
+
+        body.light-mode .subtitle, 
+        body.light-mode .subtitle-wrapper h2 {
+            color: #555;
+        }
+
+        body.light-mode .timeline-content {
+            color: #444;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        body.light-mode .written-analysis {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        body.light-mode .written-analysis p {
+            color: #444;
+        }
+
+        body.light-mode .timeline-container {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        body.light-mode .contrast-toggle {
+            color: #444;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .symbol {
+            opacity: 0.3;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelinePoints = document.querySelectorAll('.timeline-page');
+            const overlay = document.createElement('div');
+            overlay.className = 'timeline-overlay';
+            document.body.appendChild(overlay);
+
+            // Add close buttons to all quotes
+            document.querySelectorAll('.timeline-quote').forEach(quote => {
+                const closeButton = document.createElement('div');
+                closeButton.className = 'close-button';
+                closeButton.innerHTML = '×';
+                closeButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    quote.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+                quote.appendChild(closeButton);
+            });
+
+            timelinePoints.forEach(point => {
+                point.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    // Hide any currently active quotes
+                    document.querySelectorAll('.timeline-quote.active').forEach(quote => {
+                        quote.classList.remove('active');
+                    });
+                    // Show this quote
+                    const quote = this.nextElementSibling;
+                    quote.classList.add('active');
+                    overlay.classList.add('active');
+                });
+            });
+
+            // Close quote when clicking overlay
+            overlay.addEventListener('click', function() {
+                document.querySelectorAll('.timeline-quote.active').forEach(quote => {
+                    quote.classList.remove('active');
+                });
+                overlay.classList.remove('active');
+            });
+        });
+
+        // Add floating symbols
+        document.addEventListener('DOMContentLoaded', function() {
+            const symbols = ['✧', '☽', '⚝', '✴', '⚯', '⚮', '✺', '⚜'];
+            const mysticalSymbols = document.createElement('div');
+            mysticalSymbols.className = 'mystical-symbols';
+            
+            for(let i = 0; i < 30; i++) {
+                const symbol = document.createElement('div');
+                symbol.className = 'symbol';
+                symbol.style.left = `${Math.random() * 100}%`;
+                symbol.style.top = `${Math.random() * 100}%`;
+                symbol.style.animationDelay = `${Math.random() * 20}s`;
+                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                mysticalSymbols.appendChild(symbol);
+            }
+            
+            document.body.appendChild(mysticalSymbols);
+
+            // Add mouse avoidance behavior
+            document.addEventListener('mousemove', (e) => {
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                const symbols = document.querySelectorAll('.symbol');
+                const maxDistance = 300; // Distance at which symbols start to react
+                const maxMove = 150; // Maximum pixels a symbol can move
+
+                symbols.forEach(symbol => {
+                    const rect = symbol.getBoundingClientRect();
+                    const symbolX = rect.left + rect.width / 2;
+                    const symbolY = rect.top + rect.height / 2;
+
+                    // Calculate distance between mouse and symbol
+                    const deltaX = mouseX - symbolX;
+                    const deltaY = mouseY - symbolY;
+                    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+                    if (distance < maxDistance) {
+                        // Calculate repulsion force (stronger when closer)
+                        const force = (1 - distance / maxDistance) * maxMove;
+                        
+                        // Calculate repulsion direction
+                        const angle = Math.atan2(deltaY, deltaX);
+                        const moveX = -Math.cos(angle) * force;
+                        const moveY = -Math.sin(angle) * force;
+
+                        // Apply transform while preserving the rotation from the float animation
+                        const currentRotation = symbol.style.transform.match(/rotate\(([^)]+)\)/) || ['', '0deg'];
+                        symbol.style.transform = `translate(${moveX}px, ${moveY}px) ${currentRotation[0]}`;
+                    } else {
+                        // Reset position if mouse is far away
+                        symbol.style.transform = '';
+                    }
+                });
+            });
+        });
+
+        // Add contrast toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create toggle button
+            const toggleButton = document.createElement('button');
+            toggleButton.className = 'contrast-toggle';
+            toggleButton.textContent = 'Toggle Contrast';
+            document.body.appendChild(toggleButton);
+
+            // Toggle functionality
+            toggleButton.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                // Save preference
+                const isLightMode = document.body.classList.contains('light-mode');
+                localStorage.setItem('lightMode', isLightMode);
+            });
+
+            // Check for saved preference
+            if (localStorage.getItem('lightMode') === 'true') {
+                document.body.classList.add('light-mode');
+            }
+        });
+    </script>
+</head>
+<body class="content-page">
+    <div class="home-icon fade-element">
+        <a href="index.html">←</a>
+    </div>
+    
+    <div class="main-content">
+        <div class="text-content">
+            <h1 class="title fade-element">Woland's Larger Role</h1>
+            <div class="subtitle-wrapper fade-element">
+                <p class="subtitle">Let's take a look at a timeline view to further explore Woland's duty as an agent of God</p>
+                <h2 class="fade-element" style="font-family: var(--font-primary); font-size: 1rem;">These ideas are explored in further detail in the written component</h2>
+            </div>
+            <div class="timeline-container fade-element">
+                <div class="timeline-line"></div>
+                
+                <div class="timeline-point">
+                    <div class="timeline-page">295</div>
+                    <div class="timeline-quote">
+                        Margarita pleads Woland to "stop giving Frieda that handkerchief" to which Woland responds with "each department must look after its own affairs" (Bulgakov, 295).
+                    </div>
+                    <div class="timeline-content">
+                        Woland accepts that he only has so much jurisdiction in the cosmic system, and cannot intervene in this situation as it is out of his "department".
+                    </div>
+                </div>
+
+                <div class="timeline-point">
+                    <div class="timeline-page">369</div>
+                    <div class="timeline-quote">
+                        Matvei asks Woland to "reward [the Master] with peace" and that Margarita "also be taken with him". Woland agrees to "arrange it all" (Bulgakov, 369).
+                    </div>
+                    <div class="timeline-content">
+                        Woland agrees with Matvei's request, not hesitating once. Matvei, a disciple of Yeshua, can be seen as delivering a divine message which Woland is enforced to deliver.
+                    </div>
+                </div>
+
+                <div class="timeline-point">
+                    <div class="timeline-page">390</div>
+                    <div class="timeline-quote">
+                        Margarita, pleading for Pilate's mercy, was assured by Woland that "[e]verything will turn out right" as "the world is built on that" (Bulgakov, 390).
+                    </div>
+                    <div class="timeline-content">
+                        Woland's confidence in the world being built on justice is seen as a sign of his faith in God's plan and confidence in the cosmic system.
+                    </div>
+                </div>
+            </div>
+            <div class="written-analysis fade-element">
+                <h3>Written Analysis</h3>
+                <p>Woland does <b>not</b> simply act as a rogue villain, but oftentimes a <b>participant in a divine plan</b> who takes orders and carries them out without hesitation.</p>
+                <p>Towards the end of the book when Matthew Levi heads to Woland to ask him to deliver peace to the Master as well as Margarita - he asks Woland to "reward [the Master] with peace", and that Margarita "also be taken with him", to which Woland unhesitantly agrees, immediately telling Azazello to "arrange it all" (Bulgakov, 369). Woland's representation throughout the entire book has been that of a chaotic evil spirit, even to the point where Matthew Levi asks if this task is too hard for Woland to complete. However, Woland did not hesitate once and immediately complied with this request made by a disciple of Yeshua to deliver peace to two mortals. This can be seen as a divine message, and Woland did not defy - this indicates that he ultimately works within the constraints of divine authority. We see that at the end of the day, Woland's role is not just a chaotic villain, but perhaps a servant within a system orchestrated by God.    </p>
+                <p>After the ball, Margarita approaches Woland and asks him to show mercy towards Frieda who was condemned to eternal punishment to remind her of a past crime. She begs Woland to "stop giving Frieda that handkerchief" which she used to murder her own child many years prior as she believes Frieda was not in the wrong in this situation, and does not deserve to be punished. However, Woland tells Margarita that "[e]ach department must look after its own affairs" (Bulgakov 295). Margarita is essentially asking for Frieda to be forgiven for her past sins and for Woland to grant her peace. Woland gives her an interesting reply, explaining that each "department" must look after its own affairs - this can be interpreted to mean that Woland only has so much jurisdiction in the cosmic system, and that he cannot satisfy Margarita's wish as it is not within his power. This enforces the idea that Woland is not an agent of his own will, but rather serves a system larger than himself. </p>
+                <p>In the last chapter of the novel, Margarita and Woland are discussing the state of Pontius Pilate and his eternal torment - Margarita again asks Woland to grant Pilate peace and freedom, but to this, Woland assures Margarita that "[e]verything will turn out right" as "the world is built on that" (Bulgakov, 390). Woland's confidence that "everything will turn out right" in combination with his statement that "the world is built on that" indicates that the cosmic system they are both a part of has their own way of showing mercy and granting others peace. Woland accepts that he is not the highest power within a divine plan, and all he can do is provide Margarita with a reassuring truth.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Add intersection observer for timeline points
+        const observerOptions = {
+            root: null,
+            rootMargin: '-50px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all timeline points
+        document.querySelectorAll('.timeline-point').forEach(point => {
+            observer.observe(point);
+        });
+    </script>
+</body>
+</html> 
